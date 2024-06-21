@@ -9,5 +9,19 @@ services:
     ports:
       - "8000:8080"
     volumes:
-
       - .:/opt/app/api
+
+  database:
+    image: mysql
+    container_name: go-db
+    command: --sort_buffer_size=512K
+    ports:
+      - 10912:3306
+    environment:
+      - MYSQL_DATABASE=go_db
+      - MYSQL_ALLOW_EMPTY_PASSWORD=1
+    volumes:
+      - db-data:/var/lib/mysql
+
+volumes:
+  db-data:
