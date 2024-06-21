@@ -11,7 +11,7 @@ func main() {
 
 		var response string = ""
 		for {
-			response += "Raid is learning loops"
+			response += "Raid is learning loops this in an update to see if comppose it aware of it."
 			break
 		}
 		c.JSON(200, gin.H{

@@ -1,0 +1,13 @@
+version: "3.9"
+services:
+  app:
+    container_name: go-app
+    build:
+      dockerfile: Dockerfile
+      context: .
+      target: dev
+    ports:
+      - "8000:8080"
+    volumes:
+
+      - .:/opt/app/api
