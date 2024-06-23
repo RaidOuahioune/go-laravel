@@ -1,12 +1,12 @@
 package models
 
-type User struct {
-	Name string
-	Age  int
-}
+import (
+	"gorm.io/gorm"
+)
 
-// is this won't be exported due to the lowercase 'u'
-type user struct {
+type User struct {
+	gorm.Model
+	id   int
 	Name string
 	Age  int
 }
