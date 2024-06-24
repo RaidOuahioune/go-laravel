@@ -1,7 +1,7 @@
 package db
 
 import (
-	"gorm.io/driver/mysql"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
@@ -9,7 +9,8 @@ type Database struct {
 }
 
 func (m *Database) GetInstance() *gorm.DB {
-	dsn := "root@tcp(database:3306)/go_db?charset=utf8mb4&parseTime=True&loc=Local"
-	var db, _ = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+
+	dsn := "host=postgres user=root password=raid2019rr dbname=sentry port=5432 sslmode=disable"
+	var db, _ = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	return db
 }

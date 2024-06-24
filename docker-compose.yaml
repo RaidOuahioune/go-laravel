@@ -6,22 +6,24 @@ services:
       dockerfile: Dockerfile
       context: .
       target: dev
+    depends_on:
+      - postgres
+
     ports:
       - "8000:8080"
     volumes:
       - .:/opt/app/api
-
-  database:
-    image: mysql
+  postgres:
     container_name: go-db
-    command: --sort_buffer_size=512K
-    ports:
-      - 10912:3306
+    image: postgres
     environment:
-      - MYSQL_DATABASE=go_db
-      - MYSQL_ALLOW_EMPTY_PASSWORD=1
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: raid2019rr
+      POSTGRES_DB: sentry
     volumes:
-      - db-data:/var/lib/mysql
+      - pgdb:/var/lib/postgresql/data
+
+ 
 
 volumes:
-  db-data:
+  pgdb:
