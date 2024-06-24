@@ -1,7 +1,6 @@
 package main
 
 import (
-	"demo.com/hello/db/migrations"
 	"demo.com/hello/routers"
 	"demo.com/hello/services"
 	sentrygin "github.com/getsentry/sentry-go/gin"
@@ -10,7 +9,6 @@ import (
 
 func main() {
 
-	migrations.CreateUsersTable()
 	services.InitSentry()
 	Server()
 

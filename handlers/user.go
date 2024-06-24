@@ -12,7 +12,7 @@ func Index(ctx *gin.Context) {
 	var users []models.User
 	// Find users in the database
 	if err := db.Find(&users).Error; err != nil {
-		panic(err)
+
 		ctx.JSON(500, gin.H{
 			"error": "Failed to retrieve users",
 		})
