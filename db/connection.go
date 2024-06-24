@@ -1,9 +1,12 @@
 package db
 
 import (
+	"log"
+	"os"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -19,9 +22,17 @@ type Database struct {
 
 func (m *Database) GetInstance() *gorm.DB {
 
-	dsn := "host=postgres user=root password=raid2019rr dbname=sentry port=5432 sslmode=disable"
-	var db, _ = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	err := godotenv.Load(".env")
+
+	if err != nil {
+		log.Fatalf("Error loading .env file")
+	}
+
+	var DATABASE_DSN = "host=" + os.Getenv("DB_HOST") + " user=" + os.Getenv("DB_USER") + " password=" + os.Getenv("DB_PASS") + " dbname=" + os.Getenv("DB_NAME") + " port=" + os.Getenv("DB_PORT") + " sslmode=" + os.Getenv("DB_SSL_MODE")
+
+	var db, _ = gorm.Open(postgres.Open(DATABASE_DSN), &gorm.Config{})
 	sqlDB, _ := db.DB()
+	db.Debug()
 	// SetMaxIdleConns sets the maximum number of connections in the idle connection pool.
 	sqlDB.SetMaxIdleConns(DATABASE_CONFIG["max_idle_conns"].(int))
 
