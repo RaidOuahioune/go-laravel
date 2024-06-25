@@ -5,11 +5,13 @@ import (
 	"demo.com/hello/models"
 )
 
-func CreateUsersTable() {
+func SyncTableSchemas() {
 
 	var database = &db.Database{}
 	var db = database.GetInstance()
 
-	db.Migrator().CreateTable(&models.User{})
+	for _, table := range models.Tables {
+		db.Migrator().AutoMigrate(table)
+	}
 
 }

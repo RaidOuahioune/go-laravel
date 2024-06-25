@@ -36,14 +36,14 @@ func Create(ctx *gin.Context) {
 		})
 		return
 	}
+
 	// Create the user in the database
 	if err := db.Create(&user).Error; err != nil {
 		ctx.JSON(500, gin.H{
-			"error": "Failed to create user",
+			"error": err,
 		})
 		return
 	}
-
 	// Return the created user as JSON
 	ctx.JSON(200, gin.H{
 		"data": user,
