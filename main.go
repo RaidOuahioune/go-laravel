@@ -1,7 +1,7 @@
 package main
 
 import (
-	"demo.com/hello/core/auth"
+	"demo.com/hello/core/http/auth"
 	"demo.com/hello/db/migrations"
 	"demo.com/hello/models"
 	"demo.com/hello/routers"

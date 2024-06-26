@@ -3,8 +3,8 @@ package auth
 import (
 	"log"
 
-	"demo.com/hello/core/auth/forms"
-	"demo.com/hello/core/utlis"
+	"demo.com/hello/core/http/forms"
+	"demo.com/hello/core/http/utlis"
 	"demo.com/hello/db"
 	"demo.com/hello/models"
 	jwt "github.com/appleboy/gin-jwt/v2"
@@ -64,13 +64,12 @@ func identityHandler() func(c *gin.Context) interface{} {
 		var err = db.First(&user, claims[IdentityKey])
 		if err.Error != nil {
 			c.JSON(401, gin.H{
-				"error": "User not found from identyHandler",
+				"error": err.Error.Error(),
 			})
 		}
 		return &user
 	}
 }
-
 func authenticator() func(c *gin.Context) (interface{}, error) {
 	return func(c *gin.Context) (interface{}, error) {
 		var loginVals forms.LoginForm

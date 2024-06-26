@@ -1,8 +1,9 @@
 package controllers
 
 import (
-	"demo.com/hello/core/auth"
-	"demo.com/hello/core/utlis"
+	"demo.com/hello/core/http/auth"
+	"demo.com/hello/core/http/resources"
+	"demo.com/hello/core/http/utlis"
 	"demo.com/hello/db"
 	"demo.com/hello/models"
 	"github.com/gin-gonic/gin"
@@ -15,15 +16,26 @@ type UserController struct {
 
 func (m *UserController) Index(ctx *gin.Context) {
 	var currentUser = auth.CurrentUser(ctx)
-	var db *gorm.DB = (&db.Database{}).GetInstance()
-	var users []models.User
-	// ctx.JSON(200, gin.H{
-	// 	"sql": db.ToSQL(func(tx *gorm.DB) *gorm.DB {
-	// 		return tx.Find(&users)
 
-	// 	})})
-	// Find users in the database
-	db.Find(&users)
+	var db *gorm.DB = (&db.Database{}).GetInstance()
+
+	var withCompany = ctx.Query("with_company")
+
+	var users interface{}
+	if withCompany == "true" {
+
+		var fetchedUsers []resources.UserResource
+
+		db.Preload("Company").Find(&fetchedUsers)
+
+		users = fetchedUsers
+	} else {
+		// Fetch users without Company information
+		var fetchedUsers []models.User
+		db.Omit("Company").Find(&fetchedUsers)
+		users = fetchedUsers
+	}
+
 	// Return users as JSON
 	ctx.JSON(200, gin.H{
 		"data":         users,

@@ -12,8 +12,9 @@ type User struct {
 	Age       int     `gorm:"not null" validate:"required,gt=0"`
 	Password  string  `gorm:"not null" validate:"required,min=6"`
 	CompanyID int     `gorm:"default:null"`
-	Company   Company `gorm:"foreignKey:CompanyID"`
+	Company   Company `gorm:"foreignKey:CompanyID" json:"-"`
 }
+
 type Company struct {
 	gorm.Model
 	Name      string `gorm:"not null"`

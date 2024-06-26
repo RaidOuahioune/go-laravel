@@ -2,7 +2,8 @@ package routers
 
 import (
 	"demo.com/hello/controllers"
-	"demo.com/hello/core/auth"
+	"demo.com/hello/core/http/auth"
+
 	"github.com/gin-gonic/gin"
 )
 

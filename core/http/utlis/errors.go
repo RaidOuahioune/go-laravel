@@ -33,3 +33,10 @@ func ValidateAndBind(ctx *gin.Context, obj interface{}) bool {
 	}
 	return true
 }
+
+// ctx.JSON(200, gin.H{
+// 	"sql": db.ToSQL(func(tx *gorm.DB) *gorm.DB {
+// 		return tx.Find(&users)
+
+// 	})})
+// Find users in the database
