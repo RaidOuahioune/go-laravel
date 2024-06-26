@@ -61,7 +61,7 @@ func identityHandler() func(c *gin.Context) interface{} {
 		var db *gorm.DB = (&db.Database{}).GetInstance()
 		var user models.User
 
-		var err = db.First(&user, claims[IdentityKey])
+		var err = db.Find(&user, claims[IdentityKey])
 		if err.Error != nil {
 			c.JSON(401, gin.H{
 				"error": err.Error.Error(),

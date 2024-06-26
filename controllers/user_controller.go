@@ -25,9 +25,7 @@ func (m *UserController) Index(ctx *gin.Context) {
 	if withCompany == "true" {
 
 		var fetchedUsers []resources.UserResource
-
 		db.Preload("Company").Find(&fetchedUsers)
-
 		users = fetchedUsers
 	} else {
 		// Fetch users without Company information

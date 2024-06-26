@@ -9,6 +9,7 @@ import (
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 var DATABASE_CONFIG = gin.H{
@@ -30,7 +31,20 @@ func (m *Database) GetInstance() *gorm.DB {
 
 	var DATABASE_DSN = "host=" + os.Getenv("DB_HOST") + " user=" + os.Getenv("DB_USER") + " password=" + os.Getenv("DB_PASS") + " dbname=" + os.Getenv("DB_NAME") + " port=" + os.Getenv("DB_PORT") + " sslmode=" + os.Getenv("DB_SSL_MODE")
 
-	var db, _ = gorm.Open(postgres.Open(DATABASE_DSN), &gorm.Config{})
+	newLogger := logger.New(
+		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
+		logger.Config{
+			SlowThreshold:             time.Second, // Slow SQL threshold
+			LogLevel:                  logger.Info, // Log level
+			IgnoreRecordNotFoundError: true,        // Ignore ErrRecordNotFound error for logger
+			ParameterizedQueries:      true,        // Don't include params in the SQL log
+			Colorful:                  true,        // Disable color
+		},
+	)
+
+	var db, _ = gorm.Open(postgres.Open(DATABASE_DSN), &gorm.Config{
+		Logger: newLogger,
+	})
 	sqlDB, _ := db.DB()
 	db.Debug()
 	// SetMaxIdleConns sets the maximum number of connections in the idle connection pool.
