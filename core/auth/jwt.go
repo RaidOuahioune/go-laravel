@@ -25,6 +25,10 @@ func AuthMiddleware() *jwt.GinJWTMiddleware {
 	}
 	return authMiddleware
 }
+func CurrentUser(ctx *gin.Context) *models.User {
+	user, _ := ctx.Get(AuthMiddleware().IdentityKey)
+	return user.(*models.User)
+}
 func RegisterAuthMiddleware(r *gin.Engine) {
 	authMiddleware := AuthMiddleware()
 	r.Use(handlerMiddleWare(authMiddleware))

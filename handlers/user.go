@@ -13,25 +13,20 @@ import (
 )
 
 func Index(ctx *gin.Context) {
-	//jwt.ExtractClaims(ctx)
-
-	user, _ := ctx.Get(auth.IdentityKey)
-	ctx.JSON(200, gin.H{
-		"currentUser": user.(*models.User),
-	})
+	var currentUser = auth.CurrentUser(ctx)
 	var db *gorm.DB = (&db.Database{}).GetInstance()
 	var users []models.User
-	// Find users in the database
-	if err := db.Find(&users).Error; err != nil {
+	// ctx.JSON(200, gin.H{
+	// 	"sql": db.ToSQL(func(tx *gorm.DB) *gorm.DB {
+	// 		return tx.Find(&users)
 
-		ctx.JSON(500, gin.H{
-			"error": "Failed to retrieve users",
-		})
-		return
-	}
+	// 	})})
+	// Find users in the database
+	db.Find(&users)
 	// Return users as JSON
 	ctx.JSON(200, gin.H{
-		"data": users,
+		"data":         users,
+		"current_user": currentUser,
 	})
 
 }
