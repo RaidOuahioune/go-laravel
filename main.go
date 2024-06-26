@@ -3,6 +3,7 @@ package main
 import (
 	"demo.com/hello/core/auth"
 	"demo.com/hello/db/migrations"
+	"demo.com/hello/models"
 	"demo.com/hello/routers"
 	"demo.com/hello/services"
 	sentrygin "github.com/getsentry/sentry-go/gin"
@@ -19,6 +20,7 @@ func main() {
 func Server() {
 
 	var app = gin.Default()
+	models.InitValidation()
 
 	gin.SetMode(gin.ReleaseMode)
 	migrations.SyncTableSchemas()

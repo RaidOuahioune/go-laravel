@@ -1,15 +1,16 @@
 package models
 
 import (
+	"github.com/go-playground/validator/v10"
 	"gorm.io/gorm"
 )
 
 type User struct {
 	gorm.Model
-	Name      string  `gorm:"not null"`
-	Email     string  `gorm:"unique;not null"`
-	Age       int     `gorm:"not null"`
-	Password  string  `gorm:"not null"`
+	Name      string  `gorm:"not null" validate:"required"`
+	Email     string  `gorm:"unique;not null" validate:"required,email"`
+	Age       int     `gorm:"not null" validate:"required,gt=0"`
+	Password  string  `gorm:"not null" validate:"required,min=6"`
 	CompanyID int     `gorm:"default:null"`
 	Company   Company `gorm:"foreignKey:CompanyID"`
 }
@@ -30,3 +31,8 @@ type Location struct {
 }
 
 var Tables = []interface{}{&User{}, &Company{}, &Location{}}
+var Validate *validator.Validate
+
+func InitValidation() {
+	Validate = validator.New(validator.WithRequiredStructEnabled())
+}

@@ -1,9 +1,13 @@
 package handlers
 
 import (
+	"golang.org/x/crypto/bcrypt"
+
+	"demo.com/hello/core/utlis"
 	"demo.com/hello/db"
 	"demo.com/hello/models"
 	"github.com/gin-gonic/gin"
+
 	"gorm.io/gorm"
 )
 
@@ -30,13 +34,12 @@ func Create(ctx *gin.Context) {
 	var db *gorm.DB = (&db.Database{}).GetInstance()
 	var user models.User
 	// Bind the request body to the user model
-	if err := ctx.BindJSON(&user); err != nil {
-		ctx.JSON(400, gin.H{
-			"error": "Invalid request body",
-		})
+	if !utlis.ValidateAndBind(ctx, &user) {
 		return
 	}
 
+	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	user.Password = string(hashedPassword)
 	// Create the user in the database
 	if err := db.Create(&user).Error; err != nil {
 		ctx.JSON(500, gin.H{
@@ -44,7 +47,7 @@ func Create(ctx *gin.Context) {
 		})
 		return
 	}
-	// Return the created user as JSON
+
 	ctx.JSON(200, gin.H{
 		"data": user,
 	})
