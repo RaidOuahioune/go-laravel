@@ -3,6 +3,7 @@ package handlers
 import (
 	"golang.org/x/crypto/bcrypt"
 
+	"demo.com/hello/core/auth"
 	"demo.com/hello/core/utlis"
 	"demo.com/hello/db"
 	"demo.com/hello/models"
@@ -12,6 +13,12 @@ import (
 )
 
 func Index(ctx *gin.Context) {
+	//jwt.ExtractClaims(ctx)
+
+	user, _ := ctx.Get(auth.IdentityKey)
+	ctx.JSON(200, gin.H{
+		"currentUser": user.(*models.User),
+	})
 	var db *gorm.DB = (&db.Database{}).GetInstance()
 	var users []models.User
 	// Find users in the database
@@ -29,7 +36,7 @@ func Index(ctx *gin.Context) {
 
 }
 
-func Create(ctx *gin.Context) {
+func SignUp(ctx *gin.Context) {
 
 	var db *gorm.DB = (&db.Database{}).GetInstance()
 	var user models.User
@@ -40,6 +47,14 @@ func Create(ctx *gin.Context) {
 
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	user.Password = string(hashedPassword)
+
+	db.First(&user, "email", user.Email)
+	if user.ID != 0 {
+		ctx.JSON(400, gin.H{
+			"error": "Email already exists",
+		})
+		return
+	}
 	// Create the user in the database
 	if err := db.Create(&user).Error; err != nil {
 		ctx.JSON(500, gin.H{
@@ -47,8 +62,17 @@ func Create(ctx *gin.Context) {
 		})
 		return
 	}
+	var token, expires, err = auth.AuthMiddleware().TokenGenerator(&user)
+	if err != nil {
+		ctx.JSON(500, gin.H{
+			"error": err,
+		})
+		return
+	}
 
 	ctx.JSON(200, gin.H{
-		"data": user,
+		"data":   user,
+		"token":  token,
+		"expire": expires,
 	})
 }

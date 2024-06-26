@@ -25,7 +25,7 @@ func Server() {
 	gin.SetMode(gin.ReleaseMode)
 	migrations.SyncTableSchemas()
 	app.Use(sentrygin.New(sentrygin.Options{}))
-	auth.RegisterAuthRoute(app)
+	auth.RegisterAuthMiddleware(app)
 	routers.UserRouter(app)
 
 	app.Run() // listen and serve on 0.0.0.0:8080

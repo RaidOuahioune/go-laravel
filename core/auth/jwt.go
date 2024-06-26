@@ -14,15 +14,8 @@ import (
 )
 
 var (
-	identityKey = "id"
+	IdentityKey = "ID"
 )
-
-// User demo
-type User struct {
-	UserName  string
-	FirstName string
-	LastName  string
-}
 
 func AuthMiddleware() *jwt.GinJWTMiddleware {
 	authMiddleware, err := jwt.New(InitJwtParams())
@@ -32,13 +25,10 @@ func AuthMiddleware() *jwt.GinJWTMiddleware {
 	}
 	return authMiddleware
 }
-func RegisterAuthRoute(r *gin.Engine) {
+func RegisterAuthMiddleware(r *gin.Engine) {
 	authMiddleware := AuthMiddleware()
 	r.Use(handlerMiddleWare(authMiddleware))
-	r.POST("/login", authMiddleware.LoginHandler)
-	auth := r.Group("/auth", authMiddleware.MiddlewareFunc())
-	// refresh token belongs to the auth group
-	auth.GET("/refresh_token", authMiddleware.RefreshHandler)
+
 }
 
 func handlerMiddleWare(authMiddleware *jwt.GinJWTMiddleware) gin.HandlerFunc {
@@ -52,9 +42,9 @@ func handlerMiddleWare(authMiddleware *jwt.GinJWTMiddleware) gin.HandlerFunc {
 
 func payloadFunc() func(data interface{}) jwt.MapClaims {
 	return func(data interface{}) jwt.MapClaims {
-		if v, ok := data.(*User); ok {
+		if v, ok := data.(*models.User); ok {
 			return jwt.MapClaims{
-				identityKey: v.UserName,
+				IdentityKey: v.ID,
 			}
 		}
 		return jwt.MapClaims{}
@@ -64,9 +54,16 @@ func payloadFunc() func(data interface{}) jwt.MapClaims {
 func identityHandler() func(c *gin.Context) interface{} {
 	return func(c *gin.Context) interface{} {
 		claims := jwt.ExtractClaims(c)
-		return &User{
-			UserName: claims[identityKey].(string),
+		var db *gorm.DB = (&db.Database{}).GetInstance()
+		var user models.User
+
+		var err = db.First(&user, claims[IdentityKey])
+		if err.Error != nil {
+			c.JSON(401, gin.H{
+				"error": "User not found from identyHandler",
+			})
 		}
+		return &user
 	}
 }
 
@@ -93,10 +90,7 @@ func authenticator() func(c *gin.Context) (interface{}, error) {
 
 func authorizator() func(data interface{}, c *gin.Context) bool {
 	return func(data interface{}, c *gin.Context) bool {
-		if v, ok := data.(*User); ok && v.UserName == "admin" {
-			return true
-		}
-		return false
+		return true
 	}
 }
 
