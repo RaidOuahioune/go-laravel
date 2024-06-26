@@ -1,18 +1,19 @@
-package handlers
+package controllers
 
 import (
-	"golang.org/x/crypto/bcrypt"
-
 	"demo.com/hello/core/auth"
 	"demo.com/hello/core/utlis"
 	"demo.com/hello/db"
 	"demo.com/hello/models"
 	"github.com/gin-gonic/gin"
-
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
-func Index(ctx *gin.Context) {
+type UserController struct {
+}
+
+func (m *UserController) Index(ctx *gin.Context) {
 	var currentUser = auth.CurrentUser(ctx)
 	var db *gorm.DB = (&db.Database{}).GetInstance()
 	var users []models.User
@@ -31,7 +32,7 @@ func Index(ctx *gin.Context) {
 
 }
 
-func SignUp(ctx *gin.Context) {
+func (m *UserController) SignUp(ctx *gin.Context) {
 
 	var db *gorm.DB = (&db.Database{}).GetInstance()
 	var user models.User
