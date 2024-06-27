@@ -8,11 +8,14 @@ services:
       target: dev
     depends_on:
       - postgres
-
+      - redis
     ports:
       - "8000:8080"
     volumes:
       - .:/opt/app/api
+    networks:
+      - internal_net
+
   postgres:
     container_name: go-db
     image: postgres
@@ -22,8 +25,40 @@ services:
       POSTGRES_DB: sentry
     volumes:
       - pgdb:/var/lib/postgresql/data
+    networks:
+      - internal_net
 
- 
+  redis:
+    container_name: go-redis
+    image: redis
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    command: redis-server
+    ports:
+      - "4003:6379"
+    volumes:
+      - redis-data:/var/lib/redis
+    networks:
+      internal_net:
+        ipv4_address: 192.168.100.10
+
+  asynqmon:
+    container_name: go-asynqmon
+    image: hibiken/asynqmon
+    environment:
+      - REDIS_ADDR=192.168.100.10:6379
+    ports:
+      - "9000:8080"
+    networks:
+      - internal_net
+
+networks:
+  internal_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.100.0/24
 
 volumes:
   pgdb:
+  redis-data:

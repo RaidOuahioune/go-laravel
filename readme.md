@@ -4,8 +4,8 @@
 2. Gorm (the orm)
 3. github.com/go-playground/validator  (the  form validator)
 4. https://github.com/golang-jwt/jwt  &  github.com/appleboy/gin-jwt/v2 (the authenticator)
-5. Look for a cron job library
+5. Look for a cron job library(async)
 6. Air for hot-reloading the server
 
 7. DO translation and pagination
-8. DO termination middelware
+8. DO termination middelware(done some research ; i've found nothing)
