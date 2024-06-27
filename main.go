@@ -2,6 +2,7 @@ package main
 
 import (
 	"demo.com/hello/core/http/auth"
+	"demo.com/hello/core/job"
 	"demo.com/hello/db/migrations"
 	"demo.com/hello/models"
 	"demo.com/hello/routers"
@@ -27,6 +28,9 @@ func Server() {
 	app.Use(sentrygin.New(sentrygin.Options{}))
 	auth.RegisterAuthMiddleware(app)
 	routers.UserRouter(app)
+
+	job.Client()
+	job.Worker()
 
 	app.Run() // listen and serve on 0.0.0.0:8080
 

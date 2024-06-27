@@ -1,56 +1,44 @@
 package job
 
 import (
+	"context"
+	"encoding/json"
 	"log"
-	"time"
 
+	"demo.com/hello/core/job/tasks"
 	"github.com/hibiken/asynq"
 )
 
-const redisAddr = "127.0.0.1:6379"
+func Worker() {
+	srv := asynq.NewServer(
+		asynq.RedisClientOpt{Addr: GetRedisAddress()},
+		asynq.Config{Concurrency: 10},
+	)
 
-func main() {
-	client := asynq.NewClient(asynq.RedisClientOpt{Addr: redisAddr})
-	defer client.Close()
+	mux := asynq.NewServeMux()
+	mux.HandleFunc("email:welcome", sendWelcomeEmail)
+	mux.HandleFunc("email:reminder", sendReminderEmail)
 
-	// ------------------------------------------------------
-	// Example 1: Enqueue task to be processed immediately.
-	//            Use (*Client).Enqueue method.
-	// ------------------------------------------------------
-
-	task, err := NewEmailDeliveryTask(42, "some:template:id")
-	if err != nil {
-		log.Fatalf("could not create task: %v", err)
+	if err := srv.Run(mux); err != nil {
+		log.Fatal(err)
 	}
-	info, err := client.Enqueue(task)
-	if err != nil {
-		log.Fatalf("could not enqueue task: %v", err)
-	}
-	log.Printf("enqueued task: id=%s queue=%s", info.ID, info.Queue)
+}
 
-	// ------------------------------------------------------------
-	// Example 2: Schedule task to be processed in the future.
-	//            Use ProcessIn or ProcessAt option.
-	// ------------------------------------------------------------
+func sendWelcomeEmail(ctx context.Context, t *asynq.Task) error {
 
-	info, err = client.Enqueue(task, asynq.ProcessIn(24*time.Hour))
-	if err != nil {
-		log.Fatalf("could not schedule task: %v", err)
+	var p tasks.EmailTaskPayload
+	if err := json.Unmarshal(t.Payload(), &p); err != nil {
+		return err
 	}
-	log.Printf("enqueued task: id=%s queue=%s", info.ID, info.Queue)
+	log.Printf(" [*] Send Welcome Email to User %d", p.UserID)
+	return nil
+}
 
-	// ----------------------------------------------------------------------------
-	// Example 3: Set other options to tune task processing behavior.
-	//            Options include MaxRetry, Queue, Timeout, Deadline, Unique etc.
-	// ----------------------------------------------------------------------------
-
-	task, err = NewImageResizeTask("https://example.com/myassets/image.jpg")
-	if err != nil {
-		log.Fatalf("could not create task: %v", err)
+func sendReminderEmail(ctx context.Context, t *asynq.Task) error {
+	var p tasks.EmailTaskPayload
+	if err := json.Unmarshal(t.Payload(), &p); err != nil {
+		return err
 	}
-	info, err = client.Enqueue(task, asynq.MaxRetry(10), asynq.Timeout(3*time.Minute))
-	if err != nil {
-		log.Fatalf("could not enqueue task: %v", err)
-	}
-	log.Printf("enqueued task: id=%s queue=%s", info.ID, info.Queue)
+	log.Printf(" [*] Send Reminder Email to User %d", p.UserID)
+	return nil
 }
