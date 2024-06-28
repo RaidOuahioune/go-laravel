@@ -5,6 +5,7 @@ import (
 	"demo.com/hello/core/http/resources"
 	"demo.com/hello/core/http/utlis"
 	"demo.com/hello/db"
+	"demo.com/hello/db/scopes"
 	"demo.com/hello/models"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
@@ -15,29 +16,29 @@ type UserController struct {
 }
 
 func (m *UserController) Index(ctx *gin.Context) {
-	var currentUser = auth.CurrentUser(ctx)
-
+	//var currentUser = auth.CurrentUser(ctx)
 	var db *gorm.DB = (&db.Database{}).GetInstance()
+
+	var pagination *utlis.Pagination = &utlis.Pagination{}
 
 	var withCompany = ctx.Query("with_company")
 
-	var users interface{}
 	if withCompany == "true" {
 
 		var fetchedUsers []resources.UserResource
-		db.Preload("Company").Find(&fetchedUsers)
-		users = fetchedUsers
+
+		db.Scopes(scopes.Paginate(&fetchedUsers, pagination, ctx.Request, db)).Preload("Company").Find(&fetchedUsers)
+		pagination.Rows = fetchedUsers
 	} else {
 		// Fetch users without Company information
 		var fetchedUsers []models.User
-		db.Omit("Company").Find(&fetchedUsers)
-		users = fetchedUsers
+		db.Omit("Company").Scopes(scopes.Paginate(&fetchedUsers, pagination, ctx.Request, db)).Find(&fetchedUsers)
+		pagination.Rows = fetchedUsers
+
 	}
 
-	// Return users as JSON
 	ctx.JSON(200, gin.H{
-		"data":         users,
-		"current_user": currentUser,
+		"data": pagination,
 	})
 
 }

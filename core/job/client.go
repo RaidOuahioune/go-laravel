@@ -20,7 +20,7 @@ func Client() {
 	if err != nil {
 		log.Fatalf("could not create task: %v", err)
 	}
-	info, err := client.Enqueue(task, asynq.ProcessIn(24*time.Hour), asynq.MaxRetry(10), asynq.Timeout(3*time.Minute))
+	info, err := client.Enqueue(task, asynq.ProcessIn(time.Second), asynq.MaxRetry(10), asynq.Timeout(3*time.Minute))
 	if err != nil {
 		log.Fatalf("could not schedule task: %v", err)
 	}

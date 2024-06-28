@@ -30,7 +30,7 @@ func Server() {
 	routers.UserRouter(app)
 
 	job.Client()
-	job.Worker()
+	go job.Worker()
 
 	app.Run() // listen and serve on 0.0.0.0:8080
 
