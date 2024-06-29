@@ -6,6 +6,11 @@
 4. https://github.com/golang-jwt/jwt  &  github.com/appleboy/gin-jwt/v2 (the authenticator)
 5. Look for a cron job library(async)
 6. Air for hot-reloading the server
+7. Graph QL integration(github.com/99designs/gqlgen)
 
-7. DO translation and pagination
+7. DO translation and pagination(pagination doen with meta data using scopes)
 8. DO termination middelware(done some research ; i've found nothing)
+
+
+
+# for the graphql (follow steps on github.com/99designs/gqlgen)
