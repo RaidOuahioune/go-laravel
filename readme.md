@@ -14,3 +14,9 @@
 
 
 # for the graphql (follow steps on github.com/99designs/gqlgen)
+
+# go generate the needed go files afer schema modification : 
+
+```sh
+go run github.com/99designs/gqlgen generate
+```

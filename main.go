@@ -24,7 +24,7 @@ func Server() {
 
 	var app = gin.Default()
 	models.InitValidation()
-
+	//migrations.PopulateDB()
 	gin.SetMode(gin.ReleaseMode)
 	migrations.SyncTableSchemas()
 	app.Use(sentrygin.New(sentrygin.Options{}))

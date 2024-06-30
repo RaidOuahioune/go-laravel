@@ -13,6 +13,7 @@ type User struct {
 	Password  string  `gorm:"not null" validate:"required,min=6"`
 	CompanyID int     `gorm:"default:null"`
 	Company   Company `gorm:"foreignKey:CompanyID" json:"-"`
+	Todos     []Todo  `json:"-"`
 }
 
 type Company struct {
@@ -31,7 +32,19 @@ type Location struct {
 	Lat       float64
 }
 
-var Tables = []interface{}{&User{}, &Company{}, &Location{}}
+type NewTodo struct {
+	Text   string `json:"text" validate:"required,string"`
+	UserID int    `json:"userId" validate:"gt=0,exists=users,id"`
+}
+type Todo struct {
+	gorm.Model
+	Text   string `gorm:"not null" validate:"required,string"`
+	Done   bool   `gorm:"default:false" validate:"bool"`
+	UserID int    `gorm:"not null" validate:"gt=0,exists=users,id"`
+	User   User   `gorm:"foreignKey:UserID"`
+}
+
+var Tables = []interface{}{&User{}, &Company{}, &Location{}, &Todo{}}
 var Validate *validator.Validate
 
 func InitValidation() {
