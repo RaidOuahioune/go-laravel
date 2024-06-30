@@ -20,3 +20,10 @@
 ```sh
 go run github.com/99designs/gqlgen generate
 ```
+
+
+## TODOS
+
+# u need to solve the problem with the eager loading 
+# adding authentication 
+# adding doc library
