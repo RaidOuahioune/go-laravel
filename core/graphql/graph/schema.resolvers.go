@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 
+	"demo.com/hello/core/graphql/graph/model"
 	"demo.com/hello/db"
 	"demo.com/hello/models"
 )
@@ -25,6 +26,44 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input models.NewTodo)
 	db.Create(newTodo)
 
 	return newTodo, nil
+}
+
+// UpdateTodo is the resolver for the updateTodo field.
+func (r *mutationResolver) UpdateTodo(ctx context.Context, input *model.UpdateTodo) (*models.Todo, error) {
+	var db = (&db.Database{}).GetInstance()
+
+	var columnsMap = map[string]interface{}{}
+	if input.Text != nil {
+		columnsMap["text"] = *input.Text
+
+	}
+	if input.Done != nil {
+		columnsMap["done"] = *input.Done
+
+	}
+
+	var todo models.Todo
+	db.First(&todo, input.ID)
+	if todo.ID == 0 {
+		return nil, errors.New("todo not found")
+	}
+
+	db.Model(&todo).Updates(columnsMap)
+
+	return &todo, nil
+
+}
+
+// DeleteTodo is the resolver for the deleteTodo field.
+func (r *mutationResolver) DeleteTodo(ctx context.Context, id string) (*models.Todo, error) {
+	var db = (&db.Database{}).GetInstance()
+	var todo models.Todo
+	db.First(&todo, id)
+	if todo.ID == 0 {
+		return nil, errors.New("todo not found")
+	}
+	db.Delete(&todo, id)
+	return &todo, nil
 }
 
 // Todos is the resolver for the todos field.
