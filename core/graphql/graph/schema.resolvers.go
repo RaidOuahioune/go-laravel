@@ -23,6 +23,7 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input models.NewTodo)
 	}
 	var db = (&db.Database{}).GetInstance()
 	db.Create(newTodo)
+
 	return newTodo, nil
 }
 
@@ -65,6 +66,18 @@ func (r *queryResolver) User(ctx context.Context, id string) (*models.User, erro
 	return &user, nil
 }
 
+// Todo is the resolver for the todo field.
+func (r *queryResolver) Todo(ctx context.Context, id string) (*models.Todo, error) {
+	var db = (&db.Database{}).GetInstance()
+	var todo models.Todo
+
+	db.First(&todo, id)
+	if todo.ID == 0 {
+		return nil, errors.New("todo not found")
+	}
+	return &todo, nil
+}
+
 // ID implements TodoResolver.
 func (r *todoResolver) ID(ctx context.Context, obj *models.Todo) (string, error) {
 	return fmt.Sprint(obj.ID), nil
@@ -73,17 +86,6 @@ func (r *todoResolver) ID(ctx context.Context, obj *models.Todo) (string, error)
 // ID implements UserResolver.
 func (r *userResolver) ID(ctx context.Context, obj *models.User) (string, error) {
 	return fmt.Sprint(obj.ID), nil
-}
-
-// UserID is the resolver for the userId field.
-func (r *newTodoResolver) UserID(ctx context.Context, obj *models.NewTodo, data string) error {
-	var user models.User
-	var db = (&db.Database{}).GetInstance()
-	db.First(&user, obj.UserID)
-	if user.ID == 0 {
-		return fmt.Errorf("user not found with ID: %d", obj.UserID)
-	}
-	return nil
 }
 
 // Mutation returns MutationResolver implementation.
@@ -98,11 +100,27 @@ func (r *Resolver) Todo() TodoResolver { return &todoResolver{r} }
 // User returns UserResolver implementation.
 func (r *Resolver) User() UserResolver { return &userResolver{r} }
 
-// NewTodo returns NewTodoResolver implementation.
-func (r *Resolver) NewTodo() NewTodoResolver { return &newTodoResolver{r} }
-
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
 type todoResolver struct{ *Resolver }
 type userResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//     it when you're done.
+//   - You have helper methods in this file. Move them out to keep these resolver files clean.
+func (r *newTodoResolver) UserID(ctx context.Context, obj *models.NewTodo, data string) error {
+	var user models.User
+	var db = (&db.Database{}).GetInstance()
+	db.First(&user, obj.UserID)
+	if user.ID == 0 {
+		return fmt.Errorf("user not found with ID: %d", obj.Text)
+	}
+	return nil
+}
+
 type newTodoResolver struct{ *Resolver }
+
+func (r *Resolver) NewTodo() *newTodoResolver { return &newTodoResolver{r} }

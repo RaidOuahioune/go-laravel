@@ -21,11 +21,12 @@ type Query {
   todos: [Todo!]
   users: [User!]
   user(id: ID!): User
+  todo(id:ID!):Todo
 }
 
 input NewTodo {
   text: String!
-  userId: String!
+  userId: ID!
 }
 
 type Mutation {

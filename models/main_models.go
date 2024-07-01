@@ -34,7 +34,7 @@ type Location struct {
 
 type NewTodo struct {
 	Text   string `json:"text" validate:"required,string"`
-	UserID int    `json:"userId" validate:"gt=0,exists=users,id"`
+	UserID int    `json:"userId"`
 }
 type Todo struct {
 	gorm.Model
