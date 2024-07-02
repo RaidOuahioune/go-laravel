@@ -15,6 +15,14 @@ import (
 type UserController struct {
 }
 
+// @Summary get users
+// @Schemes
+// @Description do ping
+// @Tags users
+// @Accept json
+// @Produce json
+// @Success 200 {object} models.User
+// @Router / [get]
 func (m *UserController) Index(ctx *gin.Context) {
 	//var currentUser = auth.CurrentUser(ctx)
 	var db *gorm.DB = (&db.Database{}).GetInstance()

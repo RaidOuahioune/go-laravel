@@ -26,4 +26,13 @@ go run github.com/99designs/gqlgen generate
 
 # u need to solve the problem with the eager loading 
 # adding authentication 
-# adding doc library
+# Swag for the docs 
+1. to visit the docs check swagger/index.html 
+2. to generate the docs after each new commoents to do type 
+```sh
+swag init --parseDependency --parseInternal
+```
+3. for any documnetation u need to comment just above the funcion binded to that route and not in the actual declaration of that route
+
+
+

@@ -5,12 +5,14 @@ import (
 	"demo.com/hello/core/http/auth"
 	"demo.com/hello/core/job"
 	"demo.com/hello/db/migrations"
+	"demo.com/hello/docs"
 	"demo.com/hello/models"
 	"demo.com/hello/routers"
 	"demo.com/hello/services"
-
 	sentrygin "github.com/getsentry/sentry-go/gin"
 	"github.com/gin-gonic/gin"
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func main() {
@@ -32,6 +34,8 @@ func Server() {
 	routers.UserRouter(app)
 	app.POST("/query", graphql.GraphQLHandler())
 
+	docs.SwaggerInfo.BasePath = "/"
+	app.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	//job.Client()
 	go job.Worker()
 

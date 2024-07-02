@@ -8,9 +8,10 @@ import (
 )
 
 func UserRouter(r *gin.Engine) {
-	// Simple group: v1
+
 	userRouter := r.Group("/users")
 	{
+
 		userRouter.GET("/", auth.AuthMiddleware().MiddlewareFunc(), (&controllers.UserController{}).Index)
 		// "this is how to register the auth midlware"
 
