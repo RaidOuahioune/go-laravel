@@ -32,7 +32,7 @@ func Server() {
 	app.Use(sentrygin.New(sentrygin.Options{}))
 	auth.RegisterAuthMiddleware(app)
 	routers.UserRouter(app)
-	app.POST("/query", graphql.GraphQLHandler())
+	app.POST("/query", auth.AuthMiddleware().MiddlewareFunc(), graphql.GraphQLHandler())
 
 	docs.SwaggerInfo.BasePath = "/"
 	app.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))

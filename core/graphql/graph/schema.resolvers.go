@@ -32,6 +32,11 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input models.NewTodo)
 func (r *mutationResolver) UpdateTodo(ctx context.Context, input *model.UpdateTodo) (*models.Todo, error) {
 	var db = (&db.Database{}).GetInstance()
 
+	var user *models.User = ctx.Value("user").(*models.User)
+	fmt.Print("#####################")
+	fmt.Print(user.Email)
+	fmt.Print("#####################")
+
 	var columnsMap = map[string]interface{}{}
 	if input.Text != nil {
 		columnsMap["text"] = *input.Text
