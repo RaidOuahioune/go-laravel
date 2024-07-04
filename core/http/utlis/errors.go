@@ -19,13 +19,18 @@ func FormatValidationErrors(err error) map[string][]string {
 }
 
 func ValidateAndBind(ctx *gin.Context, obj interface{}) bool {
-	if err := ctx.BindJSON(obj); err != nil {
+
+	var err = ctx.BindJSON(obj)
+
+	if err != nil {
 		ctx.JSON(400, gin.H{
 			"error": "Invalid request body",
 		})
 		return false
 	}
-	if err := models.Validate.Struct(obj); err != nil {
+
+	err = models.Validate.Struct(obj)
+	if err != nil {
 		ctx.JSON(400, gin.H{
 			"error": FormatValidationErrors(err),
 		})

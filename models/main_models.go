@@ -33,14 +33,14 @@ type Location struct {
 }
 
 type NewTodo struct {
-	Text   string `json:"text" validate:"required,string"`
+	Text   string `json:"text" validate:"required"`
 	UserID int    `json:"userId"`
 }
 type Todo struct {
 	gorm.Model
-	Text   string `gorm:"not null" validate:"required,string"`
-	Done   bool   `gorm:"default:false" validate:"bool"`
-	UserID int    `gorm:"not null" validate:"gt=0,exists=users,id"`
+	Text   string `gorm:"not null" validate:"required"`
+	Done   bool   `gorm:"default:false" validate:"required"`
+	UserID int    `gorm:"not null" validate:"gt=0,required"`
 	User   User   `gorm:"foreignKey:UserID"`
 }
 

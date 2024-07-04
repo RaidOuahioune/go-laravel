@@ -21,10 +21,13 @@ require (
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/hashicorp/golang-lru/v2 v2.0.7 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
+	github.com/klauspost/compress v1.17.9 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
+	github.com/pierrec/lz4/v4 v4.1.21 // indirect
 	github.com/redis/go-redis/v9 v9.0.3 // indirect
 	github.com/robfig/cron/v3 v3.0.1 // indirect
+	github.com/segmentio/kafka-go v0.4.47 // indirect
 	github.com/sosodev/duration v1.3.1 // indirect
 	github.com/spf13/cast v1.3.1 // indirect
 	github.com/swaggo/files v1.0.1 // indirect

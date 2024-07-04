@@ -3,7 +3,6 @@ package main
 import (
 	"demo.com/hello/core/graphql"
 	"demo.com/hello/core/http/auth"
-	"demo.com/hello/core/job"
 	"demo.com/hello/db/migrations"
 	"demo.com/hello/docs"
 	"demo.com/hello/models"
@@ -21,6 +20,17 @@ func main() {
 	Server()
 
 }
+func RegisterGraphQl(app *gin.Engine) {
+
+	app.POST("/query", auth.AuthMiddleware().MiddlewareFunc(), graphql.GraphQLHandler())
+
+}
+
+func RegisterDocs(r *gin.Engine) {
+
+	docs.SwaggerInfo.BasePath = "/"
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+}
 
 func Server() {
 
@@ -28,16 +38,20 @@ func Server() {
 	models.InitValidation()
 	//migrations.PopulateDB()
 	gin.SetMode(gin.ReleaseMode)
-	migrations.SyncTableSchemas()
-	app.Use(sentrygin.New(sentrygin.Options{}))
-	auth.RegisterAuthMiddleware(app)
-	routers.UserRouter(app)
-	app.POST("/query", auth.AuthMiddleware().MiddlewareFunc(), graphql.GraphQLHandler())
 
-	docs.SwaggerInfo.BasePath = "/"
-	app.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
-	//job.Client()
-	go job.Worker()
+	migrations.SyncTableSchemas()
+
+	app.Use(sentrygin.New(sentrygin.Options{}))
+
+	auth.RegisterAuthMiddleware(app)
+
+	routers.RegisterRoutes(app)
+
+	RegisterGraphQl(app)
+
+	RegisterDocs(app)
+
+	//go job.Worker()
 
 	app.Run() // listen and serve on 0.0.0.0:8080
 
