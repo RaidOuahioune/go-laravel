@@ -12,6 +12,7 @@ func TodoRouter(r *gin.Engine) {
 	{
 
 		userRouter.POST("/", (&controllers.TodoController{}).Produce)
+		userRouter.GET("/", (&controllers.TodoController{}).Index)
 		// "this is how to register the auth midlware"
 
 		// refresh token belongs to the auth group

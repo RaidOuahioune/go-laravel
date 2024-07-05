@@ -35,3 +35,15 @@ func (m *KafkaCore) Connect(topic string, partition int) *kafka.Conn {
 	return conn
 
 }
+
+func (m *KafkaCore) NewReader(topic string) *kafka.Reader {
+	godotenv.Load(".env")
+
+	reader := kafka.NewReader(kafka.ReaderConfig{
+		GroupID: "1",
+		Brokers: []string{os.Getenv("KAFKA_ADDR")},
+		Topic:   topic,
+	})
+	return reader
+
+}

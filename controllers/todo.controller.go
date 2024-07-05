@@ -1,10 +1,16 @@
 package controllers
 
 import (
+	"context"
+	"encoding/json"
+	"log"
+
 	"demo.com/hello/core/http/utlis"
 	"demo.com/hello/db"
+	"demo.com/hello/kafka"
 	"demo.com/hello/kafka/producers"
 	"demo.com/hello/models"
+	"demo.com/hello/websockets"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
@@ -35,4 +41,25 @@ func (t *TodoController) Produce(ctx *gin.Context) {
 	ctx.JSON(200, gin.H{
 		"message": "Todo has been produced",
 	})
+}
+
+func (t *TodoController) Index(ctx *gin.Context) {
+	conn, _ := (&websockets.WebSocketServer{}).Upgrade(ctx.Writer, ctx.Request)
+	reader := (&kafka.KafkaCore{}).NewReader("todos")
+
+	defer conn.Close()
+	for {
+		message, err := reader.ReadMessage(context.Background())
+		var todo models.Todo
+		if err != nil {
+
+			log.Fatal("failed to fetch message", err)
+
+		} else {
+			json.Unmarshal(message.Value, &todo)
+			conn.WriteJSON(todo.Text)
+
+		}
+	}
+
 }
